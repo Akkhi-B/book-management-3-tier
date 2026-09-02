@@ -1,9 +1,10 @@
 import mysql.connector
 from flask import Flask, jsonify, request
-
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 def get_db_connection():
     connection = mysql.connector.connect(
@@ -70,6 +71,23 @@ def add_book():
         "message": "Book added successfully!"
     }), 201
 
+
+@app.route("/books/<int:book_id>", methods=["DELETE"])
+def delete_book(book_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    query = "DELETE FROM books WHERE id = %s"
+    cursor.execute(query, (book_id,))
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify({
+        "message": "Book deleted successfully!"
+    }), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
