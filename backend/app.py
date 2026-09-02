@@ -1,6 +1,5 @@
-from multiprocessing import connection
 import mysql.connector
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 
 
@@ -44,6 +43,32 @@ def get_books():
 
     return jsonify(books)
 
+
+@app.route("/books", methods=["POST"])
+def add_book():
+    data = request.get_json()
+
+    title = data["title"]
+    author = data["author"]
+    published_year = data["published_year"]
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    query = """
+        INSERT INTO books (title, author, published_year)
+        VALUES (%s, %s, %s)
+    """
+
+    cursor.execute(query, (title, author, published_year))
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify({
+        "message": "Book added successfully!"
+    }), 201
 
 
 if __name__ == "__main__":
