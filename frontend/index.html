@@ -230,6 +230,7 @@
                     <th>Title</th>
                     <th>Author</th>
                     <th>Published Year</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -268,6 +269,9 @@
                     <td>${book.title}</td>
                     <td>${book.author}</td>
                     <td>${book.published_year}</td>
+                    <td> 
+                         <button onclick="deleteBook(${book.id})">Delete</button>
+                    </td>
                 </tr>
             `;
 
@@ -276,6 +280,19 @@
         document.getElementById("totalBooks").textContent = books.length;
     }
 
+async function deleteBook(id) {
+
+    const response = await fetch(`${API_URL}/books/${id}`, {
+        method: "DELETE"
+    });
+
+    const result = await response.json();
+
+    document.getElementById("message").textContent = result.message;
+
+    loadBooks();
+}
+    
 
     // Add a new book
     async function addBook() {
